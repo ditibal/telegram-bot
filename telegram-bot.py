@@ -10,6 +10,7 @@ from pathlib import Path
 import sys
 import traceback
 from functools import wraps
+import os
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -39,6 +40,20 @@ def restricted(func):
         return func(update, context, *args, **kwargs)
     return wrapped
 
+@restricted
+def ping_home(update, context):
+    if not 'home_ip' in config:
+        update.message.reply_text('Не указан IP адрес')
+        return
+
+    hostname = config['home_ip']
+
+    response = os.system("ping -c 1 -W 1 " + hostname)
+
+    if response == 0:
+        update.message.reply_text(hostname + ' is up!')
+    else:
+        update.message.reply_text(hostname + ' is down!')
 
 @restricted
 def ip(update, context):
@@ -126,6 +141,8 @@ def main():
     dp.add_handler(CommandHandler("ip", ip))
 
     dp.add_handler(CommandHandler("test", test))
+
+    dp.add_handler(CommandHandler("ping_home", ping_home))
 
     dp.add_error_handler(error)
 
