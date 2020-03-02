@@ -1,0 +1,12 @@
+[Unit]
+Description=Telegram Bot
+
+[Service]
+ExecStart=/usr/bin/telegram-bot
+
+# Automatically restart the service if it crashes
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+
